@@ -658,6 +658,12 @@ marked.setOptions({ breaks:true, gfm:true });
 const DEFAULT_WEBHOOK    = 'https://n8n.heliteb.co/webhook/heliteb-interno';
 const DEFAULT_FB_WEBHOOK = 'https://n8n.heliteb.co/webhook/heliteb-feedback';
 
+// Forzar URL correcta: si la guardada es la versión antigua o apunta a un path diferente, actualizar
+const storedWebhook = localStorage.getItem('hb_webhook') || '';
+if (!storedWebhook || storedWebhook.includes('heliteb-chat') || storedWebhook.includes('heliteb-interno') === false) {
+  localStorage.setItem('hb_webhook', DEFAULT_WEBHOOK);
+}
+
 let config = {
   webhookUrl:   localStorage.getItem('hb_webhook')    || DEFAULT_WEBHOOK,
   fbWebhookUrl: localStorage.getItem('hb_fb_webhook') || DEFAULT_FB_WEBHOOK,
