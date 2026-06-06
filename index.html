@@ -533,13 +533,13 @@ header::after{
         <div class="welcome" id="welcome">
           <div class="welcome-icon">🤖</div>
           <h2>¡Hola! Soy el asistente Heliteb</h2>
-          <p id="welcomeMsg">Puedo ayudarte con productos, precios, procesos comerciales y más.</p>
+          <p id="welcomeMsg">Puedo ayudarte con productos, precios, procesos comerciales, inventario en tiempo real, pedidos, clientes y tickets de soporte — todo conectado con Odoo.</p>
           <div class="chips">
             <div class="chip" onclick="useSuggestion(this)">¿Qué cámaras tenemos para exterior?</div>
-            <div class="chip" onclick="useSuggestion(this)">¿Cómo hago una cotización en Odoo?</div>
+            <div class="chip" onclick="useSuggestion(this)">¿Cuánto stock hay disponible de cámaras Hikvision?</div>
             <div class="chip" onclick="useSuggestion(this)">¿Cuál es el proceso para cliente nuevo?</div>
-            <div class="chip" onclick="useSuggestion(this)">¿Qué sistemas de alarma manejamos?</div>
-            <div class="chip" onclick="useSuggestion(this)">¿Cuáles son nuestras marcas principales?</div>
+            <div class="chip" onclick="useSuggestion(this)">¿Qué cotizaciones tenemos abiertas hoy?</div>
+            <div class="chip" onclick="useSuggestion(this)">¿Qué tickets de soporte están pendientes?</div>
           </div>
         </div>
       </div>
@@ -655,9 +655,12 @@ marked.setOptions({ breaks:true, gfm:true });
 /* ══════════════════════════════════════════
    STATE
 ══════════════════════════════════════════ */
+const DEFAULT_WEBHOOK    = 'https://n8n.heliteb.co/webhook/heliteb-interno';
+const DEFAULT_FB_WEBHOOK = 'https://n8n.heliteb.co/webhook/heliteb-feedback';
+
 let config = {
-  webhookUrl:   localStorage.getItem('hb_webhook')    || '',
-  fbWebhookUrl: localStorage.getItem('hb_fb_webhook') || '',
+  webhookUrl:   localStorage.getItem('hb_webhook')    || DEFAULT_WEBHOOK,
+  fbWebhookUrl: localStorage.getItem('hb_fb_webhook') || DEFAULT_FB_WEBHOOK,
   userName:     localStorage.getItem('hb_name')       || '',
   userArea:     localStorage.getItem('hb_area')       || ''
 };
@@ -875,12 +878,12 @@ function clearChat() {
   w.innerHTML = `
     <div class="welcome-icon">🤖</div>
     <h2>¡Hola! Soy el asistente Heliteb</h2>
-    <p id="welcomeMsg">Puedo ayudarte con productos, precios, procesos y más.</p>
+    <p id="welcomeMsg">Puedo ayudarte con productos, precios, procesos, inventario en tiempo real, pedidos, clientes y tickets — conectado con Odoo.</p>
     <div class="chips">
       <div class="chip" onclick="useSuggestion(this)">¿Qué cámaras tenemos para exterior?</div>
-      <div class="chip" onclick="useSuggestion(this)">¿Cómo hago una cotización en Odoo?</div>
+      <div class="chip" onclick="useSuggestion(this)">¿Cuánto stock hay de cámaras Hikvision?</div>
       <div class="chip" onclick="useSuggestion(this)">¿Cuál es el proceso para cliente nuevo?</div>
-      <div class="chip" onclick="useSuggestion(this)">¿Qué sistemas de alarma manejamos?</div>
+      <div class="chip" onclick="useSuggestion(this)">¿Qué tickets de soporte están abiertos?</div>
     </div>`;
   msgEl.appendChild(w);
   updateUserUI();
