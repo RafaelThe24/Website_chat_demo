@@ -655,28 +655,19 @@ marked.setOptions({ breaks:true, gfm:true });
 /* ══════════════════════════════════════════
    STATE
 ══════════════════════════════════════════ */
-const DEFAULT_WEBHOOK    = 'https://n8n.heliteb.co/webhook/heliteb-interno';
-const DEFAULT_FB_WEBHOOK = 'https://n8n.heliteb.co/webhook/heliteb-feedback';
-
-// Forzar URL correcta: si la guardada es la versión antigua o apunta a un path diferente, actualizar
-const storedWebhook = localStorage.getItem('hb_webhook') || '';
-if (!storedWebhook || storedWebhook.includes('heliteb-chat') || storedWebhook.includes('heliteb-interno') === false) {
-  localStorage.setItem('hb_webhook', DEFAULT_WEBHOOK);
-}
+const WEBHOOK_URL = 'https://n8n.heliteb.co/webhook/heliteb-interno';
 
 let config = {
-  webhookUrl:   localStorage.getItem('hb_webhook')    || DEFAULT_WEBHOOK,
-  fbWebhookUrl: localStorage.getItem('hb_fb_webhook') || DEFAULT_FB_WEBHOOK,
-  userName:     localStorage.getItem('hb_name')       || '',
-  userArea:     localStorage.getItem('hb_area')       || ''
+  webhookUrl:   WEBHOOK_URL,
+  fbWebhookUrl: '',
+  userName:     localStorage.getItem('hb_name') || '',
+  userArea:     localStorage.getItem('hb_area') || ''
 };
 
-// Parse URL params (útil para deploy con parámetros preconfigurados)
+// Parse URL params
 const up = new URLSearchParams(location.search);
-if(up.get('webhook'))    { config.webhookUrl   = up.get('webhook');    localStorage.setItem('hb_webhook',    config.webhookUrl);   }
-if(up.get('fb_webhook')) { config.fbWebhookUrl = up.get('fb_webhook'); localStorage.setItem('hb_fb_webhook', config.fbWebhookUrl); }
-if(up.get('asesor'))     { config.userName     = up.get('asesor');     localStorage.setItem('hb_name',       config.userName);     }
-if(up.get('area'))       { config.userArea     = up.get('area');       localStorage.setItem('hb_area',       config.userArea);     }
+if(up.get('asesor')) { config.userName = up.get('asesor'); localStorage.setItem('hb_name', config.userName); }
+if(up.get('area'))   { config.userArea = up.get('area');   localStorage.setItem('hb_area', config.userArea); }
 
 function genSessionId() {
   return 'hb-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,7);
@@ -1066,14 +1057,10 @@ function openConfig(){
 }
 function closeConfig(){ document.getElementById('configModal').classList.remove('open'); }
 function saveConfig(){
-  config.webhookUrl   = document.getElementById('cfgWebhook').value.trim();
-  config.fbWebhookUrl = document.getElementById('cfgFbWebhook').value.trim();
-  config.userName     = document.getElementById('cfgName').value.trim() || config.userName;
-  config.userArea     = document.getElementById('cfgArea').value        || config.userArea;
-  localStorage.setItem('hb_webhook',    config.webhookUrl);
-  localStorage.setItem('hb_fb_webhook', config.fbWebhookUrl);
-  localStorage.setItem('hb_name',       config.userName);
-  localStorage.setItem('hb_area',       config.userArea);
+  config.userName = document.getElementById('cfgName').value.trim() || config.userName;
+  config.userArea = document.getElementById('cfgArea').value        || config.userArea;
+  localStorage.setItem('hb_name', config.userName);
+  localStorage.setItem('hb_area', config.userArea);
   updateUserUI();
   closeConfig();
   showToast('✅ Configuración guardada');
