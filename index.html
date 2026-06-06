@@ -831,27 +831,37 @@ async function sendMessage() {
     version:    '2.0'
   };
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000);
+
   try {
-    const res  = await fetch(config.webhookUrl, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+    const res = await fetch(config.webhookUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+      signal: controller.signal
     });
+    clearTimeout(timeout);
     const data = await res.json();
     removeTyping();
 
     const respuesta =
       data.respuesta || data.message || data.output || data.text || data.answer ||
-      (Array.isArray(data) ? (data[0]?.respuesta || data[0]?.message || data[0]?.output) : null) ||
-      '⚠️ No obtuve respuesta. Intenta de nuevo.';
+      (Array.isArray(data) && data.length > 0
+        ? (data[0]?.respuesta || data[0]?.message || data[0]?.output) : null) ||
+      '⚠️ El asistente no pudo procesar tu pregunta en este momento. Intenta de nuevo.';
 
     lastBotAnswer = respuesta;
     const msgId = 'msg-' + (++msgCounter);
     addMessage(respuesta, 'bot', msgId);
 
   } catch(err) {
+    clearTimeout(timeout);
     removeTyping();
-    addMessage('⚠️ No se pudo conectar con el asistente.\n\nVerifica la URL del webhook en **⚙ Configurar**', 'bot');
+    const msg = err.name === 'AbortError'
+      ? '⏱️ El asistente tardó demasiado en responder. Intenta de nuevo.'
+      : '⚠️ No se pudo conectar con el asistente. Verifica tu conexión e intenta de nuevo.';
+    addMessage(msg, 'bot');
   }
 
   document.getElementById('sendBtn').disabled = false;
